@@ -13,6 +13,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
     Button btn_j_goToAddPet;
     ListView lv_j_listOfPets;
@@ -26,6 +28,9 @@ public class MainActivity extends AppCompatActivity {
     //2. pass it to the other function and then pass it back
     //3. make a static class
     int numberTestingIfNewLoad = 50;
+    static ArrayList<Pet> listOfPets = new ArrayList<>();
+    PetListAdapter adapter;
+    Pet.PetType PET_TYPE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,13 +42,16 @@ public class MainActivity extends AppCompatActivity {
         lv_j_listOfPets  = findViewById(R.id.lv_v_listOfPets);
 
         Intent cameFrom = getIntent();
-        Bundle infoPassedToMe = cameFrom.getExtras();
 
-        if(infoPassedToMe != null)
+        if(cameFrom.getSerializableExtra("petData") != null)
         {
-            String name = infoPassedToMe.getString("Name");
-
-            Log.d("INFO FROM ADD PET", name);
+            Pet petData = (Pet) cameFrom.getSerializableExtra("petData");
+            listOfPets.add(petData);
+            Log.d("INFO FROM ADD PET", listOfPets.get(listOfPets.size() - 1).getName());
+        }
+        else
+        {
+            addDummyDataToArrayList();
         }
 
 
@@ -53,6 +61,31 @@ public class MainActivity extends AppCompatActivity {
         intent_j_addNewPet = new Intent(MainActivity.this, AddNewPet.class);
         //setup the button listener
         addNewPetButtonListener();
+        fillListView();
+    }
+
+    private void fillListView()
+    {
+        adapter = new PetListAdapter(this, listOfPets);
+        lv_j_listOfPets.setAdapter(adapter);
+    }
+
+    private void addDummyDataToArrayList()
+    {
+        Pet newPet = new Pet("Tito", 6, Pet.PetType.getPetAt(0));
+        listOfPets.add(newPet);
+
+        newPet = new Pet("Willow", 3, Pet.PetType.getPetAt(0));
+        listOfPets.add(newPet);
+
+        newPet = new Pet("Abigail", 1, Pet.PetType.getPetAt(3));
+        listOfPets.add(newPet);
+
+        newPet = new Pet("Hiss", 12, Pet.PetType.getPetAt(2));
+        listOfPets.add(newPet);
+
+        newPet = new Pet("Meow", 15, Pet.PetType.getPetAt(1));
+        listOfPets.add(newPet);
     }
 
     private void addNewPetButtonListener()
